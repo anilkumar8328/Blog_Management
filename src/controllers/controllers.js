@@ -116,8 +116,9 @@ const updateBlogs = async (req, res) => {
         let check = await blogsModel.findById(blogId)  
         if (!check) return res.status(404).send({ status: false, Error: "Invalid BlogId" }) 
 
-        if (check.isDeleted == true) return res.status(404).send({ status: false, Error: "This Data is already deleted from the DataBase" }) // this will check weather the blog is deleted or not if deleted gives error message
+
         if (req.headers["decoded-token"] != check.authorId) return res.status(404).send({ status: false, Error: "You are not authorised to see this blog" }) // check wether the authorId is authorised or not
+        if (check.isDeleted == true) return res.status(404).send({ status: false, Error: "This Data is already deleted from the DataBase" }) // this will check weather the blog is deleted or not if deleted gives error message
 
         
         let blogAll = req.body  //reciving the data from req(request) body
@@ -154,10 +155,9 @@ try {
         let findBlog = await blogsModel.findById(blogId) //it will find out the blogId 
         if (!findBlog) return res.status(404).send({ status: false, Error: "Invalid Blog Id" }) //validate the blogID 
 
-        if (findBlog.isDeleted == true) return res.status(404).send({ status: false, Error: "Blog is Already Deleted" }) //it will check wether the blogId is deleted or not if yes gives a message blogId is already deleted
-
         // check wether the authorId is authorised or not
         if (findBlog.authorId != req.headers["decoded-token"]) return res.status(404).send({ status: false, Error: "You are not authorised to see this blog" })
+        if (findBlog.isDeleted == true) return res.status(404).send({ status: false, Error: "Blog is Already Deleted" }) //it will check wether the blogId is deleted or not if yes gives a message blogId is already deleted
 
          //here it will find and update the blogId Deleted to true
         let updatedblog = await blogsModel.findOneAndUpdate({ _id: findBlog._id }, { isDeleted: true, deletedAt: new Date()}, { new: true });
@@ -184,11 +184,10 @@ const deletByQuery = async (req, res) => {
         if (data1.isPublished == true) return res.status(400).send({ status: false, Error: "data must be unpublished" })
         let deletData = await blogsModel.find(data1) //finding documnet form blogsCollection using blogsModel
 
+        if (req.headers["decoded-token"] != deletData[0].authorId) return res.status(404).send({ status: false, Error: "You are not authorised to see this blog" })
        if(deletData[0].isDeleted == true) return res.status(404).send({msg:"The data is already deleted"});
 
         if (!deletData) return res.status(404).send({ status: false, msg: "Invalid Input Data" }) //if data is not t
-       
-        if (req.headers["decoded-token"] != deletData[0].authorId) return res.status(404).send({ status: false, Error: "You are not authorised to see this blog" })
 
        // here it will find and update the document Deleted to true
         let delete1 = await blogsModel.findByIdAndUpdate(deletData[0]._id, { isDeleted: true, deletedAt: new Date() }, { new: true })
