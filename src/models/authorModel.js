@@ -7,14 +7,17 @@
 const authorSchema = new mongoose.Schema( {
     fname:{
         type: String,
-        required: true
+        required: true,
+        trim : true
     },
     lname: {
         type: String,
-        required: true
+        required: true,
+        trim : true
     },
     title: {
         type: String,
+        trim : true,
         unique: true,
         required: true,
         enum: ["Mr", "Mrs", "Miss"],
@@ -22,12 +25,14 @@ const authorSchema = new mongoose.Schema( {
     },
     email:{
         type: String,
+        trim : true,
         unique: true,
         required: true,
       validate: [validateEmail, 'Please fill a valid email address'],
     },
     password: {
         type: String,
+        trim : true,
         required: true
     }
      
