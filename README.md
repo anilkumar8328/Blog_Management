@@ -1,6 +1,3 @@
-# Uranium
-
-Repository for backend cohort - Uranium
 
 ## Blogging Site Mini Project Requirement
 
